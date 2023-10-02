@@ -1,36 +1,65 @@
 import { Elysia, t } from 'elysia'
-import { PrismaClient } from '@prisma/client'
 
-import { userControllerFactory } from './factories/userControllerFactory'
-
-const setup = (app: Elysia) => {
-  const db = new PrismaClient()
-
-  const userController = userControllerFactory(db)
-
-  return app.decorate('userController', userController)
-}
+import dependencies from './lib/dependencies'
+import { $Enums } from '@prisma/client'
 
 const app = new Elysia()
-  .use(setup)
-  .group('/v1', app =>
-    app
-      .post('/register', async ({ userController, body, set }) => {
-        const { message, code } = await userController.register(body)
+  .use(dependencies)
+  .group('/v1', app => {
+    return app.group('/user', app => {
+      return app
+        .post('/register', async ({ userController, body, set }) => {
+          const { data, code } = await userController.register(body)
 
-        set.status = code
+          set.status = code
 
-        return message
-      },
-        {
+          return { data }
+        }, {
           body: t.Object({
             username: t.String(),
             password: t.String()
           })
-        }
-      )
-  )
-  .get('/', () => 'Hello Elysia')
+        })
+        .post('/sign-in', async ({ userController, body, set }) => {
+          const { username, password } = body
+          const { data, code } = await userController.signIn(username, password)
+
+          set.status = code
+
+          return { data }
+        }, {
+          body: t.Object({
+            username: t.String(),
+            password: t.String()
+          })
+        })
+        .post('/sign-out', async ({ userController, body, set }) => {
+          const { userId } = body
+          const { data, code } = await userController.signOut(userId)
+
+          set.status = code
+
+          return { data }
+        }, {
+          body: t.Object({
+            userId: t.String()
+          })
+        })
+    })
+      .group('/operation', app => {
+        return app
+          .post('/type/:operationType', async ({ params: { operationType } }) => {
+            return operationType
+          }, {
+            body: t.Object({
+              data: t.String()
+            }),
+            params: t.Object({
+              operationType: t.Enum($Enums.OperationType)
+            })
+          })
+      })
+  })
 
 app.listen(3000)
 

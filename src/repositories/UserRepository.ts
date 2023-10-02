@@ -10,7 +10,13 @@ export default class UserRepository {
 
   async create(data: Prisma.UserCreateInput) {
     try {
-      const result = await this.db.user.create({ data })
+      const result = await this.db.user.create({
+        data,
+        select: {
+          id: true,
+          username: true
+        }
+      })
 
       logger.error(`user created; id = ${result.id}`)
 
@@ -24,9 +30,15 @@ export default class UserRepository {
   async getById(id: string) {
     try {
       const result = await this.db.user.findFirstOrThrow({
+        select: {
+          id: true,
+          username: true,
+          status: true,
+          records: true
+        },
         where: {
           id
-        }
+        },
       })
 
       logger.error(`user found; id = ${result.id}`)
@@ -41,6 +53,12 @@ export default class UserRepository {
   async getByUsername(username: string) {
     try {
       const result = await this.db.user.findFirstOrThrow({
+        select: {
+          id: true,
+          username: true,
+          status: true,
+          password: true
+        },
         where: {
           username
         }
@@ -57,7 +75,14 @@ export default class UserRepository {
 
   async getAll() {
     try {
-      const result = await this.db.user.findMany()
+      const result = await this.db.user.findMany({
+        select: {
+          id: true,
+          username: true,
+          status: true,
+          records: true
+        },
+      })
 
       logger.error(`users found; size = ${result.length}`)
 
@@ -71,6 +96,11 @@ export default class UserRepository {
   async update(id: string, data: Prisma.UserUpdateInput) {
     try {
       const result = await this.db.user.update({
+        select: {
+          id: true,
+          username: true,
+          status: true,
+        },
         where: {
           id
         },
@@ -89,6 +119,12 @@ export default class UserRepository {
   async delete(id: string) {
     try {
       const result = await this.db.user.delete({
+        select: {
+          id: true,
+          username: true,
+          status: true,
+          records: true
+        },
         where: {
           id
         }

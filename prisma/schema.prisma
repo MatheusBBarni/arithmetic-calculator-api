@@ -15,13 +15,13 @@ model User {
   id       String   @id @default(uuid())
   username String   @unique
   password String
-  status   Status   @default(ACTIVE)
+  status   Status   @default(INACTIVE)
   records  Record[]
 }
 
 model Operation {
-  id      String   @id @default(uuid())
-  type    String
+  id      String        @id @default(uuid())
+  type    OperationType
   cost    Float
   records Record[]
 }
@@ -41,4 +41,13 @@ model Record {
 enum Status {
   ACTIVE
   INACTIVE
+}
+
+enum OperationType {
+  addition
+  subtraction
+  multiplication
+  division
+  square_root
+  random_string
 }
