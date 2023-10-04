@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client'
-
 import UserRepository from '../repositories/UserRepository'
 import { hash, verify } from '../lib/bcrypt'
 import { UserCreate } from '../types/User'

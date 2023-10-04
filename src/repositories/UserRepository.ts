@@ -1,5 +1,6 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import logger from '../lib/logger'
+import { UserCreate, UserUpdate } from '../types/User'
 
 export default class UserRepository {
   private db: PrismaClient
@@ -8,7 +9,7 @@ export default class UserRepository {
     this.db = db
   }
 
-  async create(data: Prisma.UserCreateInput) {
+  async create(data: UserCreate) {
     try {
       const result = await this.db.user.create({
         data,
@@ -93,7 +94,7 @@ export default class UserRepository {
     }
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput) {
+  async update(id: string, data: UserUpdate) {
     try {
       const result = await this.db.user.update({
         select: {
